@@ -15,7 +15,7 @@
 
         :root {
             /* Day Mode Colors (Coral Reef) */
-            --bg-gradient-day: linear-gradient(180deg, #1a75ff 0%, #004080 40%, #00264d 70%, #001122 100%);
+            --bg-gradient-day: linear-gradient(180deg, #1062d1 0%, #003a80 40%, #00224d 70%, #000d1a 100%);
             --panel-bg-day: rgba(255, 255, 255, 0.12);
             --panel-border-day: rgba(255, 255, 255, 0.25);
             --text-main-day: #ffffff;
@@ -55,6 +55,7 @@
             flex-direction: column;
             justify-content: space-between;
             transition: var(--transition-theme);
+            position: relative;
         }
 
         body.night-mode {
@@ -65,6 +66,137 @@
         /* Headings Font Style */
         h1, h2, h3, h4, .logo, .section-header p, .timeline-date {
             font-family: 'Fredoka', 'Kanit', sans-serif;
+        }
+
+        /* =========================================================
+           ADVANCED OCEAN BACKGROUND LAYER
+        ========================================================= */
+        .ocean-background-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        /* 1. Sunlight Rays from Water Surface */
+        .sun-rays {
+            position: absolute;
+            top: -10%;
+            left: -10%;
+            width: 120%;
+            height: 85%;
+            background: repeating-linear-gradient(
+                85deg,
+                rgba(255, 255, 255, 0.12) 0px,
+                rgba(255, 255, 255, 0.12) 45px,
+                transparent 45px,
+                transparent 130px
+            );
+            filter: blur(10px);
+            animation: raysShimmer 7s ease-in-out infinite alternate;
+            mask-image: linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);
+            -webkit-mask-image: linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);
+        }
+
+        @keyframes raysShimmer {
+            0% { transform: scale(1) rotate(0deg); opacity: 0.5; }
+            100% { transform: scale(1.08) rotate(3deg); opacity: 0.95; }
+        }
+
+        /* 2. Water Caustics Layer */
+        .water-caustics {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 20%, rgba(0, 242, 254, 0.15), transparent 70%);
+            animation: causticsPulse 6s ease-in-out infinite alternate;
+        }
+
+        @keyframes causticsPulse {
+            0% { opacity: 0.3; transform: scale(1); }
+            100% { opacity: 0.7; transform: scale(1.1); }
+        }
+
+        /* 3. Glowing Bioluminescent Plankton Particles */
+        .plankton {
+            position: absolute;
+            background: #00f2fe;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #00f2fe, 0 0 15px #00f2fe;
+            animation: floatPlankton 10s infinite linear;
+            opacity: 0.6;
+        }
+
+        body.night-mode .plankton {
+            background: #a855f7;
+            box-shadow: 0 0 8px #a855f7, 0 0 15px #00ffcc;
+        }
+
+        @keyframes floatPlankton {
+            0% { transform: translateY(105vh) translateX(0) scale(0.5); opacity: 0; }
+            20% { opacity: 0.8; }
+            80% { opacity: 0.8; }
+            100% { transform: translateY(-10vh) translateX(50px) scale(1.2); opacity: 0; }
+        }
+
+        /* 4. Animated Seaweed at Seabed */
+        .seaweed-group {
+            position: absolute;
+            bottom: -10px;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            opacity: 0.4;
+        }
+
+        .seaweed {
+            width: 20px;
+            height: 200px;
+            background: linear-gradient(0deg, #023e8a, #00b4d8);
+            border-radius: 50px 50px 0 0;
+            transform-origin: bottom center;
+            animation: sway 4s infinite ease-in-out alternate;
+        }
+
+        .seaweed:nth-child(2n) {
+            height: 260px;
+            animation-duration: 5.5s;
+            animation-delay: -1.5s;
+            background: linear-gradient(0deg, #0077b6, #90e0ef);
+        }
+
+        .seaweed:nth-child(3n) {
+            height: 150px;
+            animation-duration: 3.8s;
+            animation-delay: -0.8s;
+        }
+
+        @keyframes sway {
+            0% { transform: rotate(-14deg) skewX(-6deg); }
+            100% { transform: rotate(14deg) skewX(6deg); }
+        }
+
+        /* Dynamic Sea Creatures */
+        .swimming-fish {
+            position: absolute;
+            font-size: 38px;
+            pointer-events: none;
+            z-index: 1;
+            animation: swimAcross 22s linear infinite;
+            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+        }
+
+        @keyframes swimAcross {
+            0% { left: -10%; transform: scaleX(1); }
+            50% { transform: scaleX(1) translateY(-25px); }
+            50.1% { transform: scaleX(-1) translateY(-25px); }
+            100% { left: 110%; transform: scaleX(-1); }
         }
 
         /* =========================================================
@@ -204,6 +336,7 @@
             width: min(1000px, 90%);
             margin: 140px auto 60px;
             z-index: 10;
+            position: relative;
         }
 
         .section-header {
@@ -441,22 +574,6 @@
             border: 1px solid rgba(255, 171, 0, 0.4);
         }
 
-        /* Dynamic Sea Creatures */
-        .swimming-fish {
-            position: absolute;
-            font-size: 35px;
-            pointer-events: none;
-            z-index: 1;
-            animation: swimAcross 22s linear infinite;
-        }
-
-        @keyframes swimAcross {
-            0% { left: -10%; transform: scaleX(1); }
-            50% { transform: scaleX(1) translateY(-20px); }
-            50.1% { transform: scaleX(-1) translateY(-20px); }
-            100% { left: 110%; transform: scaleX(-1); }
-        }
-
         /* =========================================================
            FOOTER AREA
         ========================================================= */
@@ -530,12 +647,32 @@
 </head>
 <body class="day-mode">
 
+    <!-- ADVANCED DYNAMIC OCEAN BACKGROUND -->
+    <div class="ocean-background-effects">
+        <div class="sun-rays"></div>
+        <div class="water-caustics"></div>
+        
+        <!-- Animated Seaweed at seabed -->
+        <div class="seaweed-group">
+            <div class="seaweed"></div>
+            <div class="seaweed"></div>
+            <div class="seaweed"></div>
+            <div class="seaweed"></div>
+            <div class="seaweed"></div>
+            <div class="seaweed"></div>
+        </div>
+
+        <!-- Dynamic Plankton Particle Container -->
+        <div id="planktonContainer"></div>
+    </div>
+
     <!-- CUSTOM CLOWNFISH CURSOR -->
     <div id="customCursor">🐠</div>
 
     <!-- BACKGROUND FLOATING CREATURES -->
-    <div class="swimming-fish" style="top: 25%;">🐢</div>
-    <div class="swimming-fish" style="top: 65%; animation-duration: 18s;">🦈</div>
+    <div class="swimming-fish" style="top: 22%; animation-duration: 25s;">🐢</div>
+    <div class="swimming-fish" style="top: 55%; animation-duration: 20s; animation-delay: -6s;">🪼</div>
+    <div class="swimming-fish" style="top: 78%; animation-duration: 22s; animation-delay: -12s;">🦈</div>
 
     <!-- NAVIGATION BAR -->
     <header class="site-header">
@@ -578,7 +715,7 @@
                 <div class="timeline-dot"><i class="fa-solid fa-building-columns"></i></div>
                 <div class="timeline-content card">
                     <span class="timeline-date">มัธยมศึกษาตอนต้น</span>
-                    <h3>[โรงเรียนจอมทอง]</h3>
+                    <h3>โรงเรียนจอมทอง</h3>
                     <p>ระดับชั้นมัธยมศึกษาปีที่ 1 - 2 มุ่งเน้นการศึกษาด้านวิทยาศาสตร์ คณิตศาสตร์ และคอมพิวเตอร์</p>
                 </div>
             </div>
@@ -587,7 +724,7 @@
                 <div class="timeline-dot active"><i class="fa-solid fa-star"></i></div>
                 <div class="timeline-content card active-card">
                     <span class="timeline-date">ปัจจุบัน</span>
-                    <h3>[โรงเรียนจอมทอง] (ม.3/[2])</h3>
+                    <h3>โรงเรียนจอมทอง (ม.3/2)</h3>
                     <p>กำลังศึกษาระดับชั้นมัธยมศึกษาปีที่ 3 มุ่งมั่นเตรียมความพร้อมเพื่อศึกษาต่อในระดับมัธยมศึกษาตอนปลาย</p>
                 </div>
             </div>
@@ -613,12 +750,12 @@
                         </tr>
                         <tr>
                             <td>มัธยมศึกษาตอนต้น (ม.1 - ม.2)</td>
-                            <td>[กรอกชื่อโรงเรียน]</td>
+                            <td>โรงเรียนจอมทอง</td>
                             <td><span class="badge-status badge-success">สำเร็จการศึกษา</span></td>
                         </tr>
                         <tr>
                             <td>มัธยมศึกษาตอนต้น (ม.3)</td>
-                            <td>[กรอกชื่อโรงเรียน]</td>
+                            <td>โรงเรียนจอมทอง</td>
                             <td><span class="badge-status badge-progress">กำลังศึกษา</span></td>
                         </tr>
                     </tbody>
@@ -632,7 +769,7 @@
         <div class="footer-container">
             <div>
                 <h3>Ocean Portfolio 🐚</h3>
-                <p>สร้างสรรค์โดย [เด็กหญิกฤตธีรา มะโนธรรม] ชั้น ม.3/[2]</p>
+                <p>สร้างสรรค์โดย เด็กหญิงกฤตธีรา มะโนธรรม ชั้น ม.3/2</p>
             </div>
             <div class="footer-links">
                 <a href="index.html">หน้าแรก</a>
@@ -649,6 +786,20 @@
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
+        /* Generate Glowing Plankton Particles Dynamic Floating */
+        const planktonContainer = document.getElementById('planktonContainer');
+        for (let i = 0; i < 25; i++) {
+            const plankton = document.createElement('div');
+            plankton.className = 'plankton';
+            const size = Math.random() * 5 + 3;
+            plankton.style.width = size + 'px';
+            plankton.style.height = size + 'px';
+            plankton.style.left = Math.random() * 100 + '%';
+            plankton.style.animationDuration = (Math.random() * 8 + 6) + 's';
+            plankton.style.animationDelay = (Math.random() * 6) + 's';
+            planktonContainer.appendChild(plankton);
+        }
+
         /* Custom Cursor Movement */
         const cursor = document.getElementById("customCursor");
         let lastX = 0;
