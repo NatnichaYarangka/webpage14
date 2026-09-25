@@ -3,65 +3,557 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ประวัติส่วนตัว - Student Portfolio</title>
-    <link rel="stylesheet" href="style.css">
+    <title>ประวัติส่วนตัว - OCEAN PORTFOLIO</title>
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* =========================================================
+           GOOGLE FONTS & COLOR VARIABLES
+        ========================================================= */
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Kanit:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap');
+
+        :root {
+            /* Day Mode Colors (Coral Reef) */
+            --bg-gradient-day: linear-gradient(180deg, #1a75ff 0%, #004080 40%, #00264d 70%, #001122 100%);
+            --panel-bg-day: rgba(255, 255, 255, 0.12);
+            --panel-border-day: rgba(255, 255, 255, 0.25);
+            --text-main-day: #ffffff;
+            --accent-day: #ff7b25; /* Clownfish Orange */
+            --cyan-day: #00f2fe;
+
+            /* Night Mode Colors (Deep Sea) */
+            --bg-gradient-night: linear-gradient(180deg, #020514 0%, #050b24 35%, #02030a 75%, #000000 100%);
+            --panel-bg-night: rgba(8, 20, 45, 0.55);
+            --panel-border-night: rgba(0, 242, 254, 0.2);
+            --text-main-night: #e0f7fa;
+            --accent-night: #a855f7; /* Bioluminescent Purple */
+            --cyan-night: #00ffcc;
+
+            --transition-theme: background 0.8s ease, color 0.8s ease, border-color 0.8s ease;
+        }
+
+        /* Base Setup */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: none !important; /* Hide default cursor */
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Kanit', sans-serif;
+            background: var(--bg-gradient-day);
+            color: var(--text-main-day);
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: var(--transition-theme);
+        }
+
+        body.night-mode {
+            background: var(--bg-gradient-night);
+            color: var(--text-main-night);
+        }
+
+        /* Headings Font Style */
+        h1, h2, h3, h4, .logo, .section-header p {
+            font-family: 'Fredoka', 'Kanit', sans-serif;
+        }
+
+        /* =========================================================
+           CUSTOM CLOWNFISH CURSOR & BUBBLES
+        ========================================================= */
+        #customCursor {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 38px;
+            height: 38px;
+            font-size: 28px;
+            pointer-events: none;
+            z-index: 999999;
+            transform: translate(-50%, -50%) scaleX(-1);
+            transition: transform 0.15s ease-out;
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.4));
+        }
+
+        .cursor-bubble {
+            position: fixed;
+            pointer-events: none;
+            z-index: 999998;
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(0,242,254,0.3));
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            animation: bubbleFade 1s linear forwards;
+        }
+
+        @keyframes bubbleFade {
+            0% { opacity: 0.8; transform: translate(-50%, -50%) scale(0.4); }
+            100% { opacity: 0; transform: translate(-50%, -80px) scale(1.3); }
+        }
+
+        /* =========================================================
+           NAVIGATION BAR
+        ========================================================= */
+        .site-header {
+            position: fixed;
+            top: 20px;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .navbar {
+            width: min(1180px, 92%);
+            margin: auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 24px;
+            border-radius: 30px;
+            background: var(--panel-bg-day);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--panel-border-day);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            transition: var(--transition-theme);
+        }
+
+        body.night-mode .navbar {
+            background: var(--panel-bg-night);
+            border-color: var(--panel-border-night);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: #fff;
+            font-size: 22px;
+            letter-spacing: 0.5px;
+        }
+
+        .logo span {
+            color: var(--cyan-day);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 24px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 15px;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--cyan-day);
+            text-shadow: 0 0 10px var(--cyan-day);
+        }
+
+        .theme-toggle-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.4);
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: 'Kanit', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+        }
+
+        .theme-toggle-btn:hover {
+            background: rgba(255,255,255,0.35);
+        }
+
+        /* =========================================================
+           MAIN CONTAINER & PROFILE LAYOUT
+        ========================================================= */
+        .page-content {
+            width: min(1100px, 90%);
+            margin: 140px auto 60px;
+            z-index: 10;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 45px;
+        }
+
+        .section-header h2 {
+            font-size: clamp(32px, 5vw, 48px);
+            color: #ffffff;
+            text-shadow: 0 0 15px var(--cyan-day);
+            letter-spacing: 1px;
+        }
+
+        .section-header p {
+            font-size: 1.1rem;
+            color: var(--cyan-day);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 5px;
+        }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+        .card {
+            background: var(--panel-bg-day);
+            border: 1px solid var(--panel-border-day);
+            backdrop-filter: blur(15px);
+            border-radius: 24px;
+            padding: 30px;
+            transition: var(--transition-theme), transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        body.night-mode .card {
+            background: var(--panel-bg-night);
+            border-color: var(--panel-border-night);
+        }
+
+        /* =========================================================
+           ROTATING OCEAN PROFILE FRAME WITH CLOWNFISH & BUBBLES
+        ========================================================= */
+        .profile-card-left {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .ocean-avatar-wrapper {
+            position: relative;
+            width: 230px;
+            height: 230px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Outer Rotating Glow Border */
+        .rotating-glow-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, var(--cyan-day), #ff7b25, #0088ff, var(--cyan-day));
+            animation: spinRing 6s linear infinite;
+            padding: 5px;
+            box-shadow: 0 0 25px rgba(0, 242, 254, 0.6);
+        }
+
+        @keyframes spinRing {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Orbiting Clownfish Around Frame */
+        .orbit-clownfish {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            animation: orbitFish 10s linear infinite;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .orbit-clownfish::before {
+            content: '🐠';
+            font-size: 32px;
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%) rotate(90deg);
+            filter: drop-shadow(0 0 6px rgba(255,255,255,0.8));
+        }
+
+        @keyframes orbitFish {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Floating Frame Bubbles */
+        .frame-bubble {
+            position: absolute;
+            background: radial-gradient(circle, rgba(255,255,255,0.9), rgba(0,242,254,0.4));
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 4;
+            animation: frameBubbleFloat 3.5s ease-in-out infinite;
+        }
+
+        .b1 { width: 14px; height: 14px; bottom: 10px; left: 10px; animation-delay: 0s; }
+        .b2 { width: 10px; height: 10px; top: 20px; right: 15px; animation-delay: 1.2s; }
+        .b3 { width: 18px; height: 18px; bottom: 30px; right: 5px; animation-delay: 2.1s; }
+
+        @keyframes frameBubbleFloat {
+            0% { transform: translateY(0) scale(0.8); opacity: 0.3; }
+            50% { transform: translateY(-20px) scale(1.1); opacity: 0.9; }
+            100% { transform: translateY(-40px) scale(0.8); opacity: 0; }
+        }
+
+        /* Profile Image Canvas */
+        .profile-avatar {
+            width: calc(100% - 10px);
+            height: calc(100% - 10px);
+            object-fit: cover;
+            border-radius: 50%;
+            position: relative;
+            z-index: 3;
+            background: #000;
+            border: 3px solid #ffffff;
+            transition: transform 0.4s ease;
+        }
+
+        .ocean-avatar-wrapper:hover .profile-avatar {
+            transform: scale(1.04) rotate(-3deg);
+        }
+
+        .profile-card-left h3 {
+            font-size: 1.35rem;
+            color: #ffffff;
+            margin-bottom: 5px;
+        }
+
+        .role-text {
+            color: var(--cyan-day);
+            font-size: 0.95rem;
+            font-weight: 400;
+        }
+
+        /* =========================================================
+           PROFILE INFO DETAILS
+        ========================================================= */
+        .info-box h3 {
+            font-size: 1.3rem;
+            color: var(--cyan-day);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            padding-bottom: 10px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+        }
+
+        .info-grid p {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.6;
+        }
+
+        .info-grid p strong {
+            color: var(--cyan-day);
+            margin-right: 5px;
+        }
+
+        .mt-20 {
+            margin-top: 25px;
+        }
+
+        .about-text {
+            line-height: 1.8;
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.02rem;
+        }
+
+        /* Floating background sea creatures */
+        .swimming-fish {
+            position: absolute;
+            font-size: 35px;
+            pointer-events: none;
+            z-index: 1;
+            animation: swimAcross 24s linear infinite;
+        }
+
+        @keyframes swimAcross {
+            0% { left: -10%; transform: scaleX(1); }
+            50% { transform: scaleX(1) translateY(-20px); }
+            50.1% { transform: scaleX(-1) translateY(-20px); }
+            100% { left: 110%; transform: scaleX(-1); }
+        }
+
+        /* =========================================================
+           FOOTER AREA
+        ========================================================= */
+        footer {
+            background: rgba(1, 6, 19, 0.85);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 40px 20px 20px;
+            margin-top: auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        .footer-container {
+            width: min(1100px, 90%);
+            margin: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-container h3 {
+            font-size: 1.4rem;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        .footer-container p {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--cyan-day);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 850px) {
+            .nav-links { display: none; }
+            .profile-grid { grid-template-columns: 1fr; }
+            .footer-container { flex-direction: column; text-align: center; }
+        }
+    </style>
 </head>
-<body>
-    <header class="navbar">
-        <div class="nav-container">
-            <a href="index.html" class="logo"><i class="fa-solid fa-code"></i> Student<span>Port</span></a>
-            <nav>
-                <ul class="nav-links">
-                    <li><a href="index.html">หน้าแรก</a></li>
-                    <li><a href="profile.html" class="active">ประวัติส่วนตัว</a></li>
-                    <li><a href="education.html">การศึกษา</a></li>
-                    <li><a href="hobby.html">งานอดิเรก</a></li>
-                    <li><a href="contact.html">ติดต่อ</a></li>
-                </ul>
-            </nav>
-        </div>
+<body class="day-mode">
+
+    <!-- CUSTOM CLOWNFISH CURSOR -->
+    <div id="customCursor">🐠</div>
+
+    <!-- BACKGROUND SWIMMING CREATURES -->
+    <div class="swimming-fish" style="top: 20%;">🐙</div>
+    <div class="swimming-fish" style="top: 65%; animation-duration: 28s;">🪼</div>
+
+    <!-- NAVIGATION BAR -->
+    <header class="site-header">
+        <nav class="navbar">
+            <a href="index.html" class="logo">
+                <i class="fa-solid fa-water"></i> Ocean<span>Port</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">หน้าแรก</a></li>
+                <li><a href="profile.html" class="active">ประวัติส่วนตัว</a></li>
+                <li><a href="education.html">การศึกษา</a></li>
+                <li><a href="hobby.html">งานอดิเรก</a></li>
+                <li><a href="contact.html">ติดต่อ</a></li>
+            </ul>
+            <button class="theme-toggle-btn" onclick="toggleTheme()" id="themeBtn">
+                <span>🌙</span> <span id="themeText">โหมดทะเลลึก</span>
+            </button>
+        </nav>
     </header>
 
-    <main class="container page-content">
+    <!-- MAIN PAGE CONTENT -->
+    <main class="page-content">
         <div class="section-header">
             <h2>ประวัติส่วนตัว</h2>
-            <p>Portfolio Profile Section</p>
+            <p>Portfolio Profile Section 🐚</p>
         </div>
 
         <div class="profile-grid">
+            <!-- LEFT PROFILE CARD WITH ANIMATED CLOWNFISH FRAME -->
             <div class="profile-card-left card">
-                <img src="https://placehold.co/300x300/1976D2/FFFFFF?text=My+Photo" alt="รูปโปรไฟล์ของฉัน" class="profile-avatar">
-                <h3>[เด็กหญิงกฤตธีรา มะโนธรรม]</h3>
-                <p class="role-text">นักเรียนชั้น ม.3/[2]</p>
+                <div class="ocean-avatar-wrapper">
+                    <!-- Rotating Glowing Ring -->
+                    <div class="rotating-glow-ring"></div>
+                    <!-- Orbiting Clownfish -->
+                    <div class="orbit-clownfish"></div>
+                    <!-- Floating Bubbles Around Frame -->
+                    <div class="frame-bubble b1"></div>
+                    <div class="frame-bubble b2"></div>
+                    <div class="frame-bubble b3"></div>
+                    <!-- Profile Picture (Kartoon) -->
+                    <img src="2708.jpg" alt="เด็กหญิงกฤตธีรา มะโนธรรม" class="profile-avatar">
+                </div>
+                <h3>เด็กหญิงกฤตธีรา มะโนธรรม</h3>
+                <p class="role-text">นักเรียนชั้น ม.3/2</p>
             </div>
 
+            <!-- RIGHT PROFILE DETAILS -->
             <div class="profile-card-right">
                 <div class="card info-box">
-                    <h3><i class="fa-solid fa-user"></i> ข้อมูลทั่วไป</h3>
+                    <h3><i class="fa-solid fa-id-card"></i> ข้อมูลทั่วไป</h3>
                     <div class="info-grid">
-                        <p><strong>ชื่อเล่น:</strong> [การ์ตูน]</p>
-                        <p><strong>อายุ:</strong> [14] ปี</p>
-                        <p><strong>วันเกิด:</strong> [20 พฤศจิกายน 2554]</p>
-                        <p><strong>จังหวัด:</strong> [เชียงใหม่]</p>
-                        <p><strong>โรงเรียน:</strong> [โรงเรียนจอมทอง]</p>
-                        <p><strong>ระดับชั้น:</strong> ม.3/[2]</p>
+                        <p><strong>ชื่อเล่น:</strong> การ์ตูน</p>
+                        <p><strong>อายุ:</strong> 14 ปี</p>
+                        <p><strong>วันเกิด:</strong> 20 พฤศจิกายน 2554</p>
+                        <p><strong>จังหวัด:</strong> เชียงใหม่</p>
+                        <p><strong>โรงเรียน:</strong> โรงเรียนจอมทอง</p>
+                        <p><strong>ระดับชั้น:</strong> มัธยมศึกษาปีที่ 3/2</p>
                     </div>
                 </div>
 
                 <div class="card info-box mt-20">
-                    <h3><i class="fa-solid fa-address-card"></i> เกี่ยวกับฉัน</h3>
-                    <p>สวัสดีจรั๊ฟ! หนูเป็นนักเรียนชั้นมัธยมศึกษาปีที่ 3 ที่มีความมุ่งมั่นในการเรียนรู้สิ่งใหม่ๆ เสมอ หนูสนใจในด้านวิทยาศาสตร์ เทคโนโลยี การเขียนโค้ด และการสร้างสรรค์ผลงานใหม่ๆ ในเวลาว่างผมชอบฝึกฝนทักษะคอมพิวเตอร์และเข้าร่วมกิจกรรมต่างๆ ของโรงเรียนเพื่อพัฒนาตนเองอยู่เสมอ</p>
+                    <h3><i class="fa-solid fa-user-astronaut"></i> เกี่ยวกับฉัน</h3>
+                    <p class="about-text">
+                        สวัสดีค่ะ! หนูเป็นนักเรียนชั้นมัธยมศึกษาปีที่ 3 ที่มีความมุ่งมั่นและสนุกกับการเรียนรู้สิ่งใหม่ๆ อยู่เสมอ หนูมีความสนใจในด้านวิทยาศาสตร์ เทคโนโลยี การเขียนเว็บไซต์ และการสร้างสรรค์ผลงานในรูปแบบใหม่ๆ ในเวลาว่างหนูชอบฝึกฝนทักษะคอมพิวเตอร์ และเข้าร่วมกิจกรรมต่างๆ ของโรงเรียนเพื่อพัฒนาตนเองอยู่เสมอค่ะ 🌊✨
+                    </p>
                 </div>
             </div>
         </div>
     </main>
 
+    <!-- FOOTER -->
     <footer>
-        <div class="container footer-container">
+        <div class="footer-container">
             <div>
-                <h3>Student Portfolio</h3>
-                <p>สร้างสรรค์โดย [เด็กหญิงกฤตธีรา มะโนธรรม] ชั้น ม.3/[2]</p>
+                <h3>Ocean Portfolio 🐬</h3>
+                <p>สร้างสรรค์โดย เด็กหญิงกฤตธีรา มะโนธรรม ชั้น ม.3/2</p>
             </div>
             <div class="footer-links">
                 <a href="index.html">หน้าแรก</a>
@@ -72,777 +564,57 @@
             </div>
         </div>
         <div class="copyright">
-            <p>&copy; 2026 Student Portfolio. All Rights Reserved.</p>
+            <p>&copy; 2026 Ocean Portfolio. All Rights Reserved.</p>
         </div>
     </footer>
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="th">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="OCEAN PORTFOLIO - Student Portfolio">
-<title>OCEAN PORTFOLIO</title>
 
-<style>
-/* =========================================================
-   GOOGLE FONT & VARIABLES
-========================================================= */
-@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Fredoka:wght@400;600&display=swap');
-
-:root {
-    /* Day Mode Colors */
-    --bg-gradient-day: linear-gradient(180deg, #1a75ff 0%, #004080 40%, #00264d 70%, #001122 100%);
-    --panel-bg-day: rgba(255, 255, 255, 0.12);
-    --panel-border-day: rgba(255, 255, 255, 0.25);
-    --text-main-day: #ffffff;
-    --accent-day: #ff7b25; /* Clownfish Orange */
-    --cyan-day: #00f2fe;
-
-    /* Night Mode Colors (Deep Sea) */
-    --bg-gradient-night: linear-gradient(180deg, #020514 0%, #050b24 35%, #02030a 75%, #000000 100%);
-    --panel-bg-night: rgba(8, 20, 45, 0.55);
-    --panel-border-night: rgba(0, 242, 254, 0.2);
-    --text-main-night: #e0f7fa;
-    --accent-night: #a855f7; /* Bioluminescent Purple */
-    --cyan-night: #00ffcc;
-
-    --transition-theme: background 0.8s ease, color 0.8s ease, border-color 0.8s ease;
-}
-
-/* Base Setup */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    cursor: none !important; /* Hide default cursor for custom clownfish cursor */
-}
-
-html {
-    scroll-behavior: smooth;
-}
-
-body {
-    font-family: "Kanit", sans-serif;
-    background: var(--bg-gradient-day);
-    color: var(--text-main-day);
-    overflow-x: hidden;
-    min-height: 100vh;
-    transition: var(--transition-theme);
-}
-
-body.night-mode {
-    background: var(--bg-gradient-night);
-    color: var(--text-main-night);
-}
-
-/* =========================================================
-   CUSTOM CLOWNFISH CURSOR & BUBBLE TRAIL
-========================================================= */
-#customCursor {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 38px;
-    height: 38px;
-    font-size: 28px;
-    pointer-events: none;
-    z-index: 99999;
-    transform: translate(-50%, -50%) scaleX(-1); /* Face direction */
-    transition: transform 0.15s ease-out;
-    filter: drop-shadow(0 2px 5px rgba(0,0,0,0.4));
-}
-
-.cursor-bubble {
-    position: fixed;
-    pointer-events: none;
-    z-index: 99998;
-    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(0,242,254,0.3));
-    border: 1px solid rgba(255, 255, 255, 0.8);
-    border-radius: 50%;
-    animation: bubbleFade 1s linear forwards;
-}
-
-@keyframes bubbleFade {
-    0% { opacity: 0.8; transform: translate(-50%, -50%) scale(0.4); }
-    100% { opacity: 0; transform: translate(-50%, -80px) scale(1.3); }
-}
-
-/* Click Spread Bubbles */
-.click-bubble {
-    position: fixed;
-    pointer-events: none;
-    z-index: 99997;
-    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(0,242,254,0.5));
-    border: 1px solid #ffffff;
-    border-radius: 50%;
-    animation: clickSpread 0.8s ease-out forwards;
-}
-
-@keyframes clickSpread {
-    0% { opacity: 1; transform: translate(-50%, -50%) scale(0.2); }
-    100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(1.2); }
-}
-
-/* =========================================================
-   OPENING SCENE (FISHING ANIMATION)
-========================================================= */
-.opening-screen {
-    position: fixed;
-    inset: 0;
-    z-index: 50000;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background: linear-gradient(180deg, #021027 0%, #052046 60%, #010815 100%);
-    transition: transform 1.2s cubic-bezier(0.77, 0, 0.175, 1), opacity 1s ease;
-}
-
-.opening-screen.hide {
-    transform: translateY(-100%);
-    opacity: 0;
-    pointer-events: none;
-}
-
-/* Fisherman Silhouette & Rod Line */
-.fisherman-wrapper {
-    position: absolute;
-    top: 5%;
-    right: 15%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.fisherman {
-    font-size: 65px;
-    filter: drop-shadow(0 0 10px rgba(0,242,254,0.3));
-}
-
-.fishing-line-start {
-    width: 2px;
-    height: 180px;
-    background: rgba(255, 255, 255, 0.4);
-    box-shadow: 0 0 5px rgba(255,255,255,0.8);
-    animation: lineSway 3s ease-in-out infinite alternate;
-}
-
-@keyframes lineSway {
-    0% { transform: rotate(-2deg); }
-    100% { transform: rotate(2deg); }
-}
-
-.opening-title-box {
-    text-align: center;
-    z-index: 2;
-    margin-top: 80px;
-}
-
-.opening-title-box h1 {
-    font-family: 'Fredoka', cursive;
-    font-size: clamp(45px, 8vw, 90px);
-    color: #ffffff;
-    text-shadow: 0 0 20px var(--cyan-day), 0 0 40px var(--accent-day);
-    letter-spacing: 2px;
-}
-
-.opening-title-box p {
-    font-size: 1.2rem;
-    color: #a5f3fc;
-    margin-top: 10px;
-}
-
-.enter-btn {
-    margin-top: 35px;
-    padding: 15px 40px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #00264d;
-    background: linear-gradient(90deg, #00f2fe, #4facfe);
-    border: none;
-    border-radius: 50px;
-    box-shadow: 0 0 25px rgba(0, 242, 254, 0.6);
-    transition: all 0.3s ease;
-}
-
-.enter-btn:hover {
-    transform: scale(1.08);
-    box-shadow: 0 0 40px rgba(0, 242, 254, 0.9);
-}
-
-/* =========================================================
-   RANDOM FISHING HOOK EVENT (TOP OF PAGE)
-========================================================= */
-.fishing-hook-container {
-    position: fixed;
-    top: -200px;
-    right: 20%;
-    z-index: 9000;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    transition: top 2.5s cubic-bezier(0.25, 1, 0.5, 1);
-}
-
-.fishing-hook-container.active {
-    top: 0px;
-}
-
-.hook-line {
-    width: 2px;
-    height: 220px;
-    background: rgba(255,255,255,0.6);
-}
-
-.hook-bait {
-    font-size: 28px;
-    margin-top: -5px;
-    animation: baitWiggle 1s ease-in-out infinite alternate;
-}
-
-@keyframes baitWiggle {
-    from { transform: rotate(-10deg); }
-    to { transform: rotate(10deg); }
-}
-
-/* =========================================================
-   NAVIGATION & THEME TOGGLE
-========================================================= */
-.site-header {
-    position: fixed;
-    top: 20px;
-    left: 0;
-    width: 100%;
-    z-index: 1000;
-}
-
-.navbar {
-    width: min(1180px, 92%);
-    margin: auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 24px;
-    border-radius: 30px;
-    background: var(--panel-bg-day);
-    backdrop-filter: blur(15px);
-    border: 1px solid var(--panel-border-day);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-    transition: var(--transition-theme);
-}
-
-body.night-mode .navbar {
-    background: var(--panel-bg-night);
-    border-color: var(--panel-border-night);
-}
-
-.logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    text-decoration: none;
-    color: #fff;
-    font-family: 'Fredoka', cursive;
-    font-size: 22px;
-}
-
-.nav-links {
-    display: flex;
-    gap: 24px;
-    list-style: none;
-}
-
-.nav-links a {
-    text-decoration: none;
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 14px;
-    font-weight: 500;
-    transition: 0.3s;
-}
-
-.nav-links a:hover, .nav-links a.active {
-    color: var(--cyan-day);
-    text-shadow: 0 0 10px var(--cyan-day);
-}
-
-.theme-toggle-btn {
-    background: rgba(255,255,255,0.2);
-    border: 1px solid rgba(255,255,255,0.4);
-    color: #fff;
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 13px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: 0.3s;
-}
-
-.theme-toggle-btn:hover {
-    background: rgba(255,255,255,0.35);
-}
-
-/* =========================================================
-   HERO SECTION & OCEAN BACKGROUND ELEMENTS
-========================================================= */
-.home-hero {
-    min-height: 100vh;
-    position: relative;
-    padding: 160px 6% 100px;
-    display: flex;
-    align-items: center;
-}
-
-.home-content {
-    width: min(1180px, 100%);
-    margin: auto;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 60px;
-    align-items: center;
-    z-index: 10;
-}
-
-.home-copy h2 {
-    font-size: clamp(38px, 5vw, 65px);
-    line-height: 1.15;
-}
-
-.home-copy h2 span {
-    color: var(--accent-day);
-    text-shadow: 0 0 20px rgba(255, 123, 37, 0.5);
-    transition: var(--transition-theme);
-}
-
-body.night-mode .home-copy h2 span {
-    color: var(--accent-night);
-    text-shadow: 0 0 20px rgba(168, 85, 247, 0.6);
-}
-
-.description {
-    margin-top: 20px;
-    color: rgba(255, 255, 255, 0.85);
-    font-size: 16px;
-    line-height: 1.8;
-}
-
-.home-buttons {
-    display: flex;
-    gap: 15px;
-    margin-top: 30px;
-}
-
-.btn-ocean {
-    text-decoration: none;
-    padding: 12px 28px;
-    border-radius: 30px;
-    font-size: 14px;
-    font-weight: 600;
-    transition: 0.3s;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.btn-primary {
-    background: linear-gradient(135deg, var(--accent-day), #ff4e50);
-    color: #fff;
-    box-shadow: 0 5px 20px rgba(255, 78, 80, 0.4);
-}
-
-body.night-mode .btn-primary {
-    background: linear-gradient(135deg, var(--accent-night), #6366f1);
-    box-shadow: 0 5px 20px rgba(168, 85, 247, 0.4);
-}
-
-.btn-primary:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(255, 78, 80, 0.6);
-}
-
-.btn-secondary {
-    background: rgba(255,255,255,0.1);
-    border: 1px solid rgba(255,255,255,0.3);
-    color: #fff;
-}
-
-.btn-secondary:hover {
-    background: rgba(255,255,255,0.25);
-}
-
-/* Dynamic Sea Creatures Background */
-.sea-creature {
-    position: absolute;
-    pointer-events: none;
-    user-select: none;
-    z-index: 2;
-    transition: opacity 0.8s ease;
-}
-
-/* Day Creatures */
-.day-creature { opacity: 1; }
-body.night-mode .day-creature { opacity: 0; }
-
-/* Night Creatures */
-.night-creature { opacity: 0; }
-body.night-mode .night-creature { opacity: 1; }
-
-.clownfish-main {
-    font-size: 90px;
-    animation: swimUpDown 4s ease-in-out infinite alternate;
-    filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3));
-}
-
-@keyframes swimUpDown {
-    from { transform: translateY(-15px) rotate(-3deg); }
-    to { transform: translateY(15px) rotate(3deg); }
-}
-
-.swimming-fish {
-    position: absolute;
-    font-size: 35px;
-    animation: swimAcross 18s linear infinite;
-}
-
-@keyframes swimAcross {
-    0% { left: -10%; transform: scaleX(1); }
-    50% { transform: scaleX(1) translateY(-20px); }
-    50.1% { transform: scaleX(-1) translateY(-20px); }
-    100% { left: 110%; transform: scaleX(-1); }
-}
-
-/* =========================================================
-   EXPLORE CHAPTERS
-========================================================= */
-.explore {
-    padding: 100px 6%;
-    position: relative;
-    z-index: 10;
-}
-
-.section-heading {
-    text-align: center;
-    margin-bottom: 50px;
-}
-
-.section-heading h2 {
-    font-family: 'Fredoka', cursive;
-    font-size: 2.5rem;
-}
-
-.chapter-grid {
-    width: min(1100px, 100%);
-    margin: auto;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 25px;
-}
-
-.chapter-card {
-    background: var(--panel-bg-day);
-    border: 1px solid var(--panel-border-day);
-    backdrop-filter: blur(12px);
-    border-radius: 24px;
-    padding: 35px 25px;
-    text-decoration: none;
-    color: #fff;
-    transition: var(--transition-theme), transform 0.4s ease, box-shadow 0.4s ease;
-}
-
-body.night-mode .chapter-card {
-    background: var(--panel-bg-night);
-    border-color: var(--panel-border-night);
-}
-
-.chapter-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 15px 35px rgba(0, 242, 254, 0.25);
-    border-color: var(--cyan-day);
-}
-
-.chapter-icon {
-    font-size: 40px;
-    margin-bottom: 20px;
-}
-
-.chapter-card h3 {
-    font-size: 1.4rem;
-    margin-bottom: 10px;
-}
-
-.chapter-card p {
-    font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.75);
-    line-height: 1.6;
-}
-
-/* =========================================================
-   CORAL REEF / DEEP SEA FLOOR (FOOTER AREA)
-========================================================= */
-.sea-floor-decor {
-    position: relative;
-    width: 100%;
-    height: 120px;
-    background: radial-gradient(ellipse at bottom, rgba(255,182,193,0.3) 0%, transparent 70%);
-    display: flex;
-    justify-content: space-around;
-    align-items: flex-end;
-    font-size: 45px;
-    padding-bottom: 10px;
-}
-
-footer {
-    background: #010613;
-    text-align: center;
-    padding: 40px 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 0.9rem;
-}
-
-/* =========================================================
-   RESPONSIVE DESIGN
-========================================================= */
-@media (max-width: 900px) {
-    .home-content { grid-template-columns: 1fr; text-align: center; }
-    .home-buttons { justify-content: center; }
-    .chapter-grid { grid-template-columns: 1fr; }
-    .nav-links { display: none; }
-}
-</style>
-</head>
-
-<body class="day-mode">
-
-<!-- CUSTOM CLOWNFISH CURSOR -->
-<div id="customCursor">🐠</div>
-
-<!-- RANDOM FISHING HOOK EVENT -->
-<div class="fishing-hook-container" id="fishingHook">
-    <div class="hook-line"></div>
-    <div class="hook-bait">🪝🐛</div>
-</div>
-
-<!-- =========================================================
-     OPENING SCREEN (FISHING SCENE)
-========================================================= -->
-<section class="opening-screen" id="openingScreen">
-    <div class="fisherman-wrapper">
-        <div class="fisherman">🎣</div>
-        <div class="fishing-line-start"></div>
-    </div>
-    <div class="opening-title-box">
-        <h1>OCEAN PORTFOLIO</h1>
-        <p>ดำดิ่งสู่เรื่องราวและผลงานใต้ท้องทะเล</p>
-        <button class="enter-btn" onclick="closeOpening()">ENTER MY WORLD 🌊</button>
-    </div>
-</section>
-
-<!-- =========================================================
-     NAVIGATION BAR
-========================================================= -->
-<header class="site-header">
-    <nav class="navbar">
-        <a href="index.html" class="logo">
-            <span>🐠</span> OCEAN PORT
-        </a>
-        <ul class="nav-links">
-            <li><a href="index.html" class="active">หน้าแรก</a></li>
-            <li><a href="profile.html">ประวัติส่วนตัว</a></li>
-            <li><a href="education.html">การศึกษา</a></li>
-            <li><a href="hobby.html">งานอดิเรก</a></li>
-            <li><a href="contact.html">ติดต่อ</a></li>
-        </ul>
-        <button class="theme-toggle-btn" onclick="toggleTheme()" id="themeBtn">
-            <span>🌙</span> <span id="themeText">โหมดทะเลลึก</span>
-        </button>
-    </nav>
-</header>
-
-<main>
-    <!-- =========================================================
-         HERO SECTION
-    ========================================================= -->
-    <section class="home-hero">
-        <!-- Floating Sea Creatures (Day/Night) -->
-        <div class="sea-creature day-creature swimming-fish" style="top: 25%;">🐢</div>
-        <div class="sea-creature day-creature swimming-fish" style="top: 65%; animation-duration: 24s;">⭐</div>
-        <div class="sea-creature night-creature swimming-fish" style="top: 30%;">🪼</div>
-        <div class="sea-creature night-creature swimming-fish" style="top: 70%; animation-duration: 15s;">🦑</div>
-
-        <div class="home-content">
-            <div class="home-copy">
-                <h2>สวัสดีครับ! <br>ฉันชื่อ <span>[กรอกชื่อ]</span></h2>
-                <p class="description">
-                    ยินดีต้อนรับเข้าสู่พอร์ตโฟลิโอธีมท่องโลกใต้ทะเล (Ocean Portfolio) 
-                    สัมผัสประสบการณ์ใต้ท้องทะเลพร้อมการเรียนรู้และเรื่องราวของฉัน
-                </p>
-                <div class="home-buttons">
-                    <a href="profile.html" class="btn-ocean btn-primary">รู้จักฉันมากขึ้น 🌊</a>
-                    <a href="hobby.html" class="btn-ocean btn-secondary">ดูงานอดิเรก 🪸</a>
-                </div>
-            </div>
-
-            <!-- Main Mascot Centerpiece -->
-            <div style="text-align: center;">
-                <div class="clownfish-main day-creature">🐠</div>
-                <div class="clownfish-main night-creature" style="display:none;">🐡</div>
-            </div>
-        </div>
-    </section>
-
-    <!-- =========================================================
-         EXPLORE CHAPTERS
-    ========================================================= -->
-    <section class="explore">
-        <div class="section-heading">
-            <h2>สำรวจเรื่องราวใต้ท้องทะเล</h2>
-            <p>เลือกบทเรียนและเนื้อหาที่ต้องการรับชม</p>
-        </div>
-
-        <div class="chapter-grid">
-            <a href="profile.html" class="chapter-card">
-                <div class="chapter-icon">🤿</div>
-                <h3>ประวัติส่วนตัว</h3>
-                <p>ทำความรู้จักตัวตน ความสนใจ และข้อมูลทั่วไปของฉัน</p>
-            </a>
-
-            <a href="education.html" class="chapter-card">
-                <div class="chapter-icon">🐚</div>
-                <h3>การศึกษา</h3>
-                <p>เส้นทางการเรียนรู้และประวัติการศึกษาชั้น ม.3</p>
-            </a>
-
-            <a href="hobby.html" class="chapter-card">
-                <div class="chapter-icon">🪸</div>
-                <h3>งานอดิเรก</h3>
-                <p>กิจกรรมยามว่าง กีฬา เกม และความสนใจพิเศษ</p>
-            </a>
-        </div>
-    </section>
-</main>
-
-<!-- CORAL REEF / DEEP SEA DECORATIVE FLOOR -->
-<div class="sea-floor-decor">
-    <span class="day-creature">🪸</span>
-    <span class="day-creature">🐚</span>
-    <span class="day-creature">🪼</span>
-    <span class="day-creature">🦐</span>
-    <span class="night-creature">🫧</span>
-    <span class="night-creature">🦀</span>
-    <span class="night-creature">🐙</span>
-</div>
-
-<footer>
-    <p>&copy; 2026 OCEAN PORTFOLIO — สร้างสรรค์โดย [กรอกชื่อ-นามสกุล] ชั้น ม.3</p>
-</footer>
-
-<!-- =========================================================
-     JAVASCRIPT LOGIC
-========================================================= -->
-<script>
-/* Custom Cursor Movement */
-const cursor = document.getElementById("customCursor");
-let lastX = 0, lastY = 0;
-
-document.addEventListener("mousemove", (e) => {
-    cursor.style.left = e.clientX + "px";
-    cursor.style.top = e.clientY + "px";
-
-    // Flip Clownfish based on horizontal move direction
-    if (e.clientX < lastX) {
-        cursor.style.transform = "translate(-50%, -50%) scaleX(1)";
-    } else if (e.clientX > lastX) {
-        cursor.style.transform = "translate(-50%, -50%) scaleX(-1)";
-    }
-    lastX = e.clientX;
-    lastY = e.clientY;
-
-    // Generate Trail Bubbles
-    if (Math.random() < 0.25) {
-        createCursorBubble(e.clientX, e.clientY);
-    }
-});
-
-function createCursorBubble(x, y) {
-    const bubble = document.createElement("div");
-    bubble.className = "cursor-bubble";
-    const size = Math.random() * 12 + 6;
-    bubble.style.width = size + "px";
-    bubble.style.height = size + "px";
-    bubble.style.left = x + "px";
-    bubble.style.top = y + "px";
-    document.body.appendChild(bubble);
-    setTimeout(() => bubble.remove(), 1000);
-}
-
-/* Click Spread Bubbles */
-document.addEventListener("click", (e) => {
-    for (let i = 0; i < 8; i++) {
-        const bubble = document.createElement("div");
-        bubble.className = "click-bubble";
-        const size = Math.random() * 16 + 8;
-        bubble.style.width = size + "px";
-        bubble.style.height = size + "px";
-        bubble.style.left = e.clientX + "px";
-        bubble.style.top = e.clientY + "px";
-        
-        const angle = Math.random() * Math.PI * 2;
-        const dist = Math.random() * 60 + 20;
-        bubble.style.setProperty("--dx", (Math.cos(angle) * dist) + "px");
-        bubble.style.setProperty("--dy", (Math.sin(angle) * dist) + "px");
-        
-        document.body.appendChild(bubble);
-        setTimeout(() => bubble.remove(), 800);
-    }
-});
-
-/* Theme Toggle (Day / Night Deep Sea) */
-function toggleTheme() {
-    const body = document.body;
-    const themeBtnText = document.getElementById("themeText");
-    const dayFish = document.querySelector(".clownfish-main.day-creature");
-    const nightFish = document.querySelector(".clownfish-main.night-creature");
-
-    body.classList.toggle("night-mode");
-
-    if (body.classList.contains("night-mode")) {
-        themeBtnText.textContent = "โหมดกลางวัน";
-        dayFish.style.display = "none";
-        nightFish.style.display = "block";
-    } else {
-        themeBtnText.textContent = "โหมดทะเลลึก";
-        dayFish.style.display = "block";
-        nightFish.style.display = "none";
-    }
-}
-
-/* Opening Screen Close (Fishing Pull-Up) */
-function closeOpening() {
-    document.getElementById("openingScreen").classList.add("hide");
-}
-
-document.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-        closeOpening();
-    }
-});
-
-/* Random Fishing Hook Spawning */
-function triggerFishingHook() {
-    const hook = document.getElementById("fishingHook");
-    hook.classList.add("active");
-    setTimeout(() => {
-        hook.classList.remove("active");
-    }, 4500);
-}
-
-// Trigger fishing hook event every 12 seconds
-setInterval(triggerFishingHook, 12000);
-</script>
-
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        /* Custom Cursor Movement */
+        const cursor = document.getElementById("customCursor");
+        let lastX = 0;
+
+        document.addEventListener("mousemove", (e) => {
+            cursor.style.left = e.clientX + "px";
+            cursor.style.top = e.clientY + "px";
+
+            if (e.clientX < lastX) {
+                cursor.style.transform = "translate(-50%, -50%) scaleX(1)";
+            } else if (e.clientX > lastX) {
+                cursor.style.transform = "translate(-50%, -50%) scaleX(-1)";
+            }
+            lastX = e.clientX;
+
+            if (Math.random() < 0.2) {
+                createCursorBubble(e.clientX, e.clientY);
+            }
+        });
+
+        function createCursorBubble(x, y) {
+            const bubble = document.createElement("div");
+            bubble.className = "cursor-bubble";
+            const size = Math.random() * 12 + 6;
+            bubble.style.width = size + "px";
+            bubble.style.height = size + "px";
+            bubble.style.left = x + "px";
+            bubble.style.top = y + "px";
+            document.body.appendChild(bubble);
+            setTimeout(() => bubble.remove(), 1000);
+        }
+
+        /* Theme Toggle Function */
+        function toggleTheme() {
+            const body = document.body;
+            const themeBtnText = document.getElementById("themeText");
+
+            body.classList.toggle("night-mode");
+
+            if (body.classList.contains("night-mode")) {
+                themeBtnText.textContent = "โหมดกลางวัน";
+            } else {
+                themeBtnText.textContent = "โหมดทะเลลึก";
+            }
+        }
+    </script>
 </body>
 </html>
