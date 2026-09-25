@@ -69,7 +69,7 @@
         }
 
         /* =========================================================
-           ADVANCED OCEAN BACKGROUND DECORATIONS
+           ADVANCED MULTI-LAYER OCEAN BACKGROUND EFFECTS
         ========================================================= */
         .ocean-background-effects {
             position: fixed;
@@ -82,68 +82,82 @@
             overflow: hidden;
         }
 
-        /* 1. Underwater Sunlight Rays */
+        /* 1. Underwater Sunlight Rays Effect */
         .sun-rays {
             position: absolute;
             top: -10%;
             left: -10%;
             width: 120%;
-            height: 80%;
+            height: 85%;
             background: repeating-linear-gradient(
                 85deg,
-                rgba(255, 255, 255, 0.1) 0px,
-                rgba(255, 255, 255, 0.1) 40px,
-                transparent 40px,
-                transparent 120px
+                rgba(255, 255, 255, 0.12) 0px,
+                rgba(255, 255, 255, 0.12) 45px,
+                transparent 45px,
+                transparent 130px
             );
-            filter: blur(12px);
-            animation: raysShimmer 8s ease-in-out infinite alternate;
+            filter: blur(10px);
+            animation: raysShimmer 7s ease-in-out infinite alternate;
             mask-image: linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);
             -webkit-mask-image: linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);
         }
 
         @keyframes raysShimmer {
-            0% { transform: scale(1) rotate(0deg); opacity: 0.6; }
-            100% { transform: scale(1.08) rotate(2deg); opacity: 0.9; }
+            0% { transform: scale(1) rotate(0deg); opacity: 0.5; }
+            100% { transform: scale(1.08) rotate(3deg); opacity: 0.95; }
         }
 
-        /* 2. Floating Deep Ocean Bubbles */
-        .bg-bubble {
+        /* 2. Water Caustics Waves Glow Layer */
+        .water-caustics {
             position: absolute;
-            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8), rgba(0, 242, 254, 0.2));
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            border-radius: 50%;
-            box-shadow: 0 0 10px rgba(0, 242, 254, 0.3);
-            animation: bubbleRise 12s infinite ease-in;
-            bottom: -50px;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 20%, rgba(0, 242, 254, 0.15), transparent 70%);
+            animation: causticsPulse 6s ease-in-out infinite alternate;
         }
 
-        @keyframes bubbleRise {
-            0% {
-                transform: translateY(0) translateX(0) scale(0.8);
-                opacity: 0;
-            }
+        @keyframes causticsPulse {
+            0% { opacity: 0.3; transform: scale(1); }
+            100% { opacity: 0.7; transform: scale(1.1); }
+        }
+
+        /* 3. Glowing Bioluminescent Plankton Particles */
+        .plankton {
+            position: absolute;
+            background: #00f2fe;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #00f2fe, 0 0 15px #00f2fe;
+            animation: floatPlankton 10s infinite linear;
+            opacity: 0.6;
+        }
+
+        body.night-mode .plankton {
+            background: #a855f7;
+            box-shadow: 0 0 8px #a855f7, 0 0 15px #00ffcc;
+        }
+
+        @keyframes floatPlankton {
+            0% { transform: translateY(105vh) translateX(0) scale(0.5); opacity: 0; }
             20% { opacity: 0.8; }
             80% { opacity: 0.8; }
-            100% {
-                transform: translateY(-110vh) translateX(60px) scale(1.2);
-                opacity: 0;
-            }
+            100% { transform: translateY(-10vh) translateX(50px) scale(1.2); opacity: 0; }
         }
 
-        /* 3. Seaweed Vegetation at Bottom */
+        /* 4. Swaying Seaweed at Seabed */
         .seaweed-group {
             position: absolute;
             bottom: -10px;
             width: 100%;
             display: flex;
             justify-content: space-around;
-            opacity: 0.35;
+            opacity: 0.4;
         }
 
         .seaweed {
-            width: 18px;
-            height: 180px;
+            width: 20px;
+            height: 200px;
             background: linear-gradient(0deg, #023e8a, #00b4d8);
             border-radius: 50px 50px 0 0;
             transform-origin: bottom center;
@@ -151,21 +165,21 @@
         }
 
         .seaweed:nth-child(2n) {
-            height: 230px;
+            height: 260px;
             animation-duration: 5.5s;
             animation-delay: -1.5s;
             background: linear-gradient(0deg, #0077b6, #90e0ef);
         }
 
         .seaweed:nth-child(3n) {
-            height: 140px;
+            height: 150px;
             animation-duration: 3.8s;
             animation-delay: -0.8s;
         }
 
         @keyframes sway {
-            0% { transform: rotate(-12deg) skewX(-5deg); }
-            100% { transform: rotate(12deg) skewX(5deg); }
+            0% { transform: rotate(-14deg) skewX(-6deg); }
+            100% { transform: rotate(14deg) skewX(6deg); }
         }
 
         /* =========================================================
@@ -604,6 +618,7 @@
             pointer-events: none;
             z-index: 1;
             animation: swimAcross 22s linear infinite;
+            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
         }
 
         @keyframes swimAcross {
@@ -684,11 +699,12 @@
 </head>
 <body class="day-mode">
 
-    <!-- DYNAMIC OCEAN BACKGROUND EFFECTS -->
+    <!-- DYNAMIC MULTI-LAYER OCEAN BACKGROUND EFFECTS -->
     <div class="ocean-background-effects">
         <div class="sun-rays"></div>
+        <div class="water-caustics"></div>
         
-        <!-- Animated Seaweed -->
+        <!-- Animated Seaweed at seabed -->
         <div class="seaweed-group">
             <div class="seaweed"></div>
             <div class="seaweed"></div>
@@ -698,8 +714,8 @@
             <div class="seaweed"></div>
         </div>
 
-        <!-- Dynamic Floating Bubbles Container -->
-        <div id="bubblesContainer"></div>
+        <!-- Dynamic Plankton Particle Container -->
+        <div id="planktonContainer"></div>
     </div>
 
     <!-- INTRO FISHING ANIMATION OVERLAY -->
@@ -806,18 +822,18 @@
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        /* Generate Background Bubbles Dynamic Floating */
-        const container = document.getElementById('bubblesContainer');
-        for (let i = 0; i < 15; i++) {
-            const bubble = document.createElement('div');
-            bubble.className = 'bg-bubble';
-            const size = Math.random() * 20 + 8;
-            bubble.style.width = size + 'px';
-            bubble.style.height = size + 'px';
-            bubble.style.left = Math.random() * 100 + '%';
-            bubble.style.animationDuration = (Math.random() * 8 + 6) + 's';
-            bubble.style.animationDelay = (Math.random() * 5) + 's';
-            container.appendChild(bubble);
+        /* Generate Glowing Plankton Particles Dynamic Floating */
+        const planktonContainer = document.getElementById('planktonContainer');
+        for (let i = 0; i < 25; i++) {
+            const plankton = document.createElement('div');
+            plankton.className = 'plankton';
+            const size = Math.random() * 5 + 3;
+            plankton.style.width = size + 'px';
+            plankton.style.height = size + 'px';
+            plankton.style.left = Math.random() * 100 + '%';
+            plankton.style.animationDuration = (Math.random() * 8 + 6) + 's';
+            plankton.style.animationDelay = (Math.random() * 6) + 's';
+            planktonContainer.appendChild(plankton);
         }
 
         /* Fishing Intro Animation Sequence */
