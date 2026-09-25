@@ -3,32 +3,630 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>หน้าแรก - Student Portfolio</title>
-    <link rel="stylesheet" href="style.css">
+    <title>หน้าแรก - OCEAN PORTFOLIO</title>
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* =========================================================
+           GOOGLE FONTS & COLOR VARIABLES
+        ========================================================= */
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Kanit:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap');
+
+        :root {
+            /* Day Mode Colors (Coral Reef) */
+            --bg-gradient-day: linear-gradient(180deg, #1a75ff 0%, #004080 40%, #00264d 70%, #001122 100%);
+            --panel-bg-day: rgba(255, 255, 255, 0.12);
+            --panel-border-day: rgba(255, 255, 255, 0.25);
+            --text-main-day: #ffffff;
+            --accent-day: #ff7b25; /* Clownfish Orange */
+            --cyan-day: #00f2fe;
+
+            /* Night Mode Colors (Deep Sea) */
+            --bg-gradient-night: linear-gradient(180deg, #020514 0%, #050b24 35%, #02030a 75%, #000000 100%);
+            --panel-bg-night: rgba(8, 20, 45, 0.55);
+            --panel-border-night: rgba(0, 242, 254, 0.2);
+            --text-main-night: #e0f7fa;
+            --accent-night: #a855f7; /* Bioluminescent Purple */
+            --cyan-night: #00ffcc;
+
+            --transition-theme: background 0.8s ease, color 0.8s ease, border-color 0.8s ease;
+        }
+
+        /* Base Setup */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: none !important; /* Hide default cursor */
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Kanit', sans-serif;
+            background: var(--bg-gradient-day);
+            color: var(--text-main-day);
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: var(--transition-theme);
+        }
+
+        body.night-mode {
+            background: var(--bg-gradient-night);
+            color: var(--text-main-night);
+        }
+
+        /* Headings Font Style */
+        h1, h2, h3, h4, .logo, .badge, .section-header p {
+            font-family: 'Fredoka', 'Kanit', sans-serif;
+        }
+
+        /* =========================================================
+           FISHING INTRO ANIMATION SCREEN
+        ========================================================= */
+        #intro-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, #87CEEB 0%, #1a75ff 50%, #00264d 100%);
+            z-index: 999999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: transform 1.2s cubic-bezier(0.77, 0, 0.175, 1), opacity 0.8s ease;
+        }
+
+        /* Floating Boat & Character */
+        .fisherman-box {
+            position: absolute;
+            top: 25%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: boatBob 2.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes boatBob {
+            0% { transform: translateY(0) rotate(-2deg); }
+            100% { transform: translateY(12px) rotate(2deg); }
+        }
+
+        .character-avatar {
+            font-size: 80px;
+            filter: drop-shadow(0 8px 10px rgba(0,0,0,0.3));
+            position: relative;
+            z-index: 2;
+        }
+
+        .fishing-rod {
+            position: absolute;
+            top: 20px;
+            right: -25px;
+            font-size: 50px;
+            transform-origin: bottom left;
+            animation: rodReel 1.8s ease-in-out infinite alternate;
+        }
+
+        @keyframes rodReel {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(-8deg); }
+        }
+
+        /* Fishing Line & Hook */
+        .fishing-line {
+            position: absolute;
+            top: 140px;
+            width: 2px;
+            background: rgba(255, 255, 255, 0.8);
+            height: 200px;
+            animation: lineExtend 2s ease-in-out forwards;
+        }
+
+        .hook-item {
+            position: absolute;
+            bottom: -25px;
+            left: -12px;
+            font-size: 28px;
+            color: #ffd700;
+            filter: drop-shadow(0 0 8px #00f2fe);
+        }
+
+        .caught-title {
+            position: absolute;
+            bottom: -65px;
+            left: -90px;
+            width: 200px;
+            text-align: center;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 20px;
+            font-weight: bold;
+            color: #ffffff;
+            background: rgba(0,0,0,0.4);
+            padding: 6px 15px;
+            border-radius: 20px;
+            backdrop-filter: blur(5px);
+            border: 1px solid var(--cyan-day);
+        }
+
+        /* Trigger Animation when pulled up */
+        #intro-overlay.pull-up {
+            transform: translateY(-100%);
+            opacity: 0.9;
+        }
+
+        #intro-overlay.pull-up .fisherman-box {
+            animation: reelUp 0.8s ease-in forwards;
+        }
+
+        @keyframes reelUp {
+            0% { transform: translateY(0); }
+            30% { transform: translateY(30px); } /* Tug down before pulling */
+            100% { transform: translateY(-500px); }
+        }
+
+        .skip-intro-btn {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            background: rgba(255,255,255,0.25);
+            border: 1px solid rgba(255,255,255,0.5);
+            color: #fff;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-family: 'Kanit', sans-serif;
+            font-size: 14px;
+            transition: 0.3s;
+            z-index: 1000;
+        }
+
+        .skip-intro-btn:hover {
+            background: rgba(255,255,255,0.5);
+        }
+
+        /* =========================================================
+           CUSTOM CLOWNFISH CURSOR & BUBBLES
+        ========================================================= */
+        #customCursor {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 38px;
+            height: 38px;
+            font-size: 28px;
+            pointer-events: none;
+            z-index: 999999;
+            transform: translate(-50%, -50%) scaleX(-1);
+            transition: transform 0.15s ease-out;
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.4));
+        }
+
+        .cursor-bubble {
+            position: fixed;
+            pointer-events: none;
+            z-index: 999998;
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(0,242,254,0.3));
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            animation: bubbleFade 1s linear forwards;
+        }
+
+        @keyframes bubbleFade {
+            0% { opacity: 0.8; transform: translate(-50%, -50%) scale(0.4); }
+            100% { opacity: 0; transform: translate(-50%, -80px) scale(1.3); }
+        }
+
+        /* =========================================================
+           NAVIGATION BAR
+        ========================================================= */
+        .site-header {
+            position: fixed;
+            top: 20px;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .navbar {
+            width: min(1180px, 92%);
+            margin: auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 24px;
+            border-radius: 30px;
+            background: var(--panel-bg-day);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--panel-border-day);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            transition: var(--transition-theme);
+        }
+
+        body.night-mode .navbar {
+            background: var(--panel-bg-night);
+            border-color: var(--panel-border-night);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: #fff;
+            font-size: 22px;
+            letter-spacing: 0.5px;
+        }
+
+        .logo span {
+            color: var(--cyan-day);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 24px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 15px;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--cyan-day);
+            text-shadow: 0 0 10px var(--cyan-day);
+        }
+
+        .theme-toggle-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.4);
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: 'Kanit', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+        }
+
+        .theme-toggle-btn:hover {
+            background: rgba(255,255,255,0.35);
+        }
+
+        /* =========================================================
+           HERO SECTION & MAIN CONTENT
+        ========================================================= */
+        main {
+            margin-top: 130px;
+            z-index: 10;
+        }
+
+        .hero-section {
+            padding: 40px 0 60px;
+        }
+
+        .hero-container {
+            width: min(1100px, 90%);
+            margin: auto;
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 18px;
+            background: rgba(0, 242, 254, 0.15);
+            border: 1px solid var(--cyan-day);
+            color: var(--cyan-day);
+            border-radius: 20px;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+            backdrop-filter: blur(5px);
+        }
+
+        .hero-content h1 {
+            font-size: clamp(36px, 5vw, 54px);
+            line-height: 1.25;
+            margin-bottom: 18px;
+            color: #ffffff;
+        }
+
+        .hero-content h1 .highlight {
+            color: var(--accent-day);
+            text-shadow: 0 0 20px rgba(255, 123, 37, 0.6);
+        }
+
+        body.night-mode .hero-content h1 .highlight {
+            color: var(--cyan-night);
+            text-shadow: 0 0 20px rgba(0, 255, 204, 0.6);
+        }
+
+        .hero-sub {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.85);
+            line-height: 1.7;
+            font-weight: 300;
+            margin-bottom: 30px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            padding: 12px 28px;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 500;
+            font-family: 'Kanit', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--cyan-day), #0088ff);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(0, 242, 254, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 242, 254, 0.6);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-3px);
+        }
+
+        /* Profile Image Frame */
+        .hero-image-wrapper {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .blob-bg {
+            position: absolute;
+            width: 320px;
+            height: 320px;
+            background: radial-gradient(circle, rgba(0,242,254,0.3) 0%, rgba(0,0,0,0) 70%);
+            border-radius: 50%;
+            animation: pulseGlow 4s infinite alternate;
+        }
+
+        @keyframes pulseGlow {
+            0% { transform: scale(0.9); opacity: 0.5; }
+            100% { transform: scale(1.1); opacity: 0.9; }
+        }
+
+        .hero-img {
+            width: 280px;
+            height: 280px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 4px solid var(--cyan-day);
+            box-shadow: 0 0 30px rgba(0, 242, 254, 0.5);
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Feature Cards Section */
+        .quick-highlights {
+            padding: 40px 0 80px;
+        }
+
+        .grid-3 {
+            width: min(1100px, 90%);
+            margin: auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background: var(--panel-bg-day);
+            border: 1px solid var(--panel-border-day);
+            backdrop-filter: blur(15px);
+            border-radius: 24px;
+            padding: 30px;
+            transition: var(--transition-theme), transform 0.3s ease, box-shadow 0.3s ease;
+            text-align: center;
+        }
+
+        body.night-mode .card {
+            background: var(--panel-bg-night);
+            border-color: var(--panel-border-night);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0, 242, 254, 0.25);
+            border-color: var(--cyan-day);
+        }
+
+        .feature-card .icon {
+            font-size: 40px;
+            color: var(--cyan-day);
+            margin-bottom: 15px;
+            text-shadow: 0 0 15px rgba(0, 242, 254, 0.5);
+        }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+
+        .feature-card p {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.85);
+            font-weight: 300;
+        }
+
+        /* Dynamic Swimming Creatures */
+        .swimming-fish {
+            position: absolute;
+            font-size: 35px;
+            pointer-events: none;
+            z-index: 1;
+            animation: swimAcross 22s linear infinite;
+        }
+
+        @keyframes swimAcross {
+            0% { left: -10%; transform: scaleX(1); }
+            50% { transform: scaleX(1) translateY(-20px); }
+            50.1% { transform: scaleX(-1) translateY(-20px); }
+            100% { left: 110%; transform: scaleX(-1); }
+        }
+
+        /* =========================================================
+           FOOTER AREA
+        ========================================================= */
+        footer {
+            background: rgba(1, 6, 19, 0.85);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 40px 20px 20px;
+            margin-top: auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        .footer-container {
+            width: min(1100px, 90%);
+            margin: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-container h3 {
+            font-size: 1.4rem;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        .footer-container p {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--cyan-day);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hero-container { grid-template-columns: 1fr; text-align: center; }
+            .hero-buttons { justify-content: center; }
+            .footer-container { flex-direction: column; text-align: center; }
+        }
+    </style>
 </head>
-<body>
-    <header class="navbar">
-        <div class="nav-container">
-            <a href="index.html" class="logo"><i class="fa-solid fa-code"></i> Student<span>Port</span></a>
-            <nav>
-                <ul class="nav-links">
-                    <li><a href="index.html" class="active">หน้าแรก</a></li>
-                    <li><a href="profile.html">ประวัติส่วนตัว</a></li>
-                    <li><a href="education.html">การศึกษา</a></li>
-                    <li><a href="hobby.html">งานอดิเรก</a></li>
-                    <li><a href="contact.html">ติดต่อ</a></li>
-                </ul>
-            </nav>
+<body class="day-mode">
+
+    <!-- INTRO FISHING ANIMATION OVERLAY -->
+    <div id="intro-overlay">
+        <div class="fisherman-box">
+            <div class="character-avatar">👧🏻</div>
+            <div class="fishing-rod">🎣</div>
+            <div class="fishing-line">
+                <div class="hook-item">🪝</div>
+                <div class="caught-title">🌊 OCEAN PORTFOLIO</div>
+            </div>
         </div>
+        <button class="skip-intro-btn" onclick="finishIntro()">ข้ามอนิเมชั่น ⏩</button>
+    </div>
+
+    <!-- CUSTOM CLOWNFISH CURSOR -->
+    <div id="customCursor">🐠</div>
+
+    <!-- BACKGROUND SWIMMING ANIMALS -->
+    <div class="swimming-fish" style="top: 25%;">🐋</div>
+    <div class="swimming-fish" style="top: 70%; animation-duration: 26s;">🐢</div>
+
+    <!-- NAVIGATION BAR -->
+    <header class="site-header">
+        <nav class="navbar">
+            <a href="index.html" class="logo">
+                <i class="fa-solid fa-water"></i> Ocean<span>Port</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html" class="active">หน้าแรก</a></li>
+                <li><a href="profile.html">ประวัติส่วนตัว</a></li>
+                <li><a href="education.html">การศึกษา</a></li>
+                <li><a href="hobby.html">งานอดิเรก</a></li>
+                <li><a href="contact.html">ติดต่อ</a></li>
+            </ul>
+            <button class="theme-toggle-btn" onclick="toggleTheme()" id="themeBtn">
+                <span>🌙</span> <span id="themeText">โหมดทะเลลึก</span>
+            </button>
+        </nav>
     </header>
 
+    <!-- MAIN HERO CONTENT -->
     <main>
         <section class="hero-section">
-            <div class="container hero-container">
+            <div class="hero-container">
                 <div class="hero-content">
-                    <span class="badge">ยินดีต้อนรับสู่พอร์ตโฟลิโอ</span>
-                    <h1>สวัสดีครับ, หนู <span class="highlight">[การ์ตูน]</span></h1>
+                    <span class="badge">ยินดีต้อนรับสู่พอร์ตโฟลิโอ 🌊</span>
+                    <h1>สวัสดีค่ะ, หนู <span class="highlight">การ์ตูน</span> ✨</h1>
                     <p class="hero-sub">นักเรียนชั้นมัธยมศึกษาปีที่ 3 ที่มีความสนใจในด้านเทคโนโลยี การออกแบบ และการเรียนรู้สิ่งใหม่ๆ</p>
                     <div class="hero-buttons">
                         <a href="profile.html" class="btn btn-primary">รู้จักฉันมากขึ้น <i class="fa-solid fa-arrow-right"></i></a>
@@ -37,37 +635,39 @@
                 </div>
                 <div class="hero-image-wrapper">
                     <div class="blob-bg"></div>
-                    <img src="https://placehold.co/400x400/1976D2/FFFFFF?text=Profile+Image" alt="รูปโปรไฟล์ของฉัน" class="hero-img">
+                    <img src="https://placehold.co/400x400/1976D2/FFFFFF?text=Kartoon+Profile" alt="รูปโปรไฟล์ของฉัน" class="hero-img">
                 </div>
             </div>
         </section>
 
+        <!-- QUICK HIGHLIGHTS SECTION -->
         <section class="quick-highlights">
-            <div class="container grid-3">
+            <div class="grid-3">
                 <div class="card feature-card">
                     <i class="fa-solid fa-graduation-cap icon"></i>
                     <h3>ระดับการศึกษา</h3>
-                    <p>มัธยมศึกษาปีที่ 3/[2]</p>
+                    <p>มัธยมศึกษาปีที่ 3/2</p>
                 </div>
                 <div class="card feature-card">
-                    <i class="fa-solid fa-book-open icon"></i>
+                    <i class="fa-solid fa-flask icon"></i>
                     <h3>วิชาที่ชอบ</h3>
-                    <p>[วิชาวิทยาศาสตร์]</p>
+                    <p>วิชาวิทยาศาสตร์ 🧪</p>
                 </div>
                 <div class="card feature-card">
-                    <i class="fa-solid fa-laptop-code icon"></i>
+                    <i class="fa-solid fa-music icon"></i>
                     <h3>ความสนใจ</h3>
-                    <p>[ชอบ น้องเอยกับน้องแป๋ว วงriize]</p>
+                    <p>ชอบ น้องเอยกับน้องแป๋ว วง RIIZE 🧡</p>
                 </div>
             </div>
         </section>
     </main>
 
+    <!-- FOOTER -->
     <footer>
-        <div class="container footer-container">
+        <div class="footer-container">
             <div>
-                <h3>Student Portfolio</h3>
-                <p>สร้างสรรค์โดย [เด็กหญิง กฤตธีรา มะโนธรรม] ชั้น ม.3/[2]</p>
+                <h3>Ocean Portfolio 🐬</h3>
+                <p>สร้างสรรค์โดย เด็กหญิง กฤตธีรา มะโนธรรม ชั้น ม.3/2</p>
             </div>
             <div class="footer-links">
                 <a href="index.html">หน้าแรก</a>
@@ -78,777 +678,75 @@
             </div>
         </div>
         <div class="copyright">
-            <p>&copy; 2026 Student Portfolio. All Rights Reserved.</p>
+            <p>&copy; 2026 Ocean Portfolio. All Rights Reserved.</p>
         </div>
     </footer>
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="th">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="OCEAN PORTFOLIO - Student Portfolio">
-<title>OCEAN PORTFOLIO</title>
 
-<style>
-/* =========================================================
-   GOOGLE FONT & VARIABLES
-========================================================= */
-@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Fredoka:wght@400;600&display=swap');
-
-:root {
-    /* Day Mode Colors */
-    --bg-gradient-day: linear-gradient(180deg, #1a75ff 0%, #004080 40%, #00264d 70%, #001122 100%);
-    --panel-bg-day: rgba(255, 255, 255, 0.12);
-    --panel-border-day: rgba(255, 255, 255, 0.25);
-    --text-main-day: #ffffff;
-    --accent-day: #ff7b25; /* Clownfish Orange */
-    --cyan-day: #00f2fe;
-
-    /* Night Mode Colors (Deep Sea) */
-    --bg-gradient-night: linear-gradient(180deg, #020514 0%, #050b24 35%, #02030a 75%, #000000 100%);
-    --panel-bg-night: rgba(8, 20, 45, 0.55);
-    --panel-border-night: rgba(0, 242, 254, 0.2);
-    --text-main-night: #e0f7fa;
-    --accent-night: #a855f7; /* Bioluminescent Purple */
-    --cyan-night: #00ffcc;
-
-    --transition-theme: background 0.8s ease, color 0.8s ease, border-color 0.8s ease;
-}
-
-/* Base Setup */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    cursor: none !important; /* Hide default cursor for custom clownfish cursor */
-}
-
-html {
-    scroll-behavior: smooth;
-}
-
-body {
-    font-family: "Kanit", sans-serif;
-    background: var(--bg-gradient-day);
-    color: var(--text-main-day);
-    overflow-x: hidden;
-    min-height: 100vh;
-    transition: var(--transition-theme);
-}
-
-body.night-mode {
-    background: var(--bg-gradient-night);
-    color: var(--text-main-night);
-}
-
-/* =========================================================
-   CUSTOM CLOWNFISH CURSOR & BUBBLE TRAIL
-========================================================= */
-#customCursor {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 38px;
-    height: 38px;
-    font-size: 28px;
-    pointer-events: none;
-    z-index: 99999;
-    transform: translate(-50%, -50%) scaleX(-1); /* Face direction */
-    transition: transform 0.15s ease-out;
-    filter: drop-shadow(0 2px 5px rgba(0,0,0,0.4));
-}
-
-.cursor-bubble {
-    position: fixed;
-    pointer-events: none;
-    z-index: 99998;
-    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(0,242,254,0.3));
-    border: 1px solid rgba(255, 255, 255, 0.8);
-    border-radius: 50%;
-    animation: bubbleFade 1s linear forwards;
-}
-
-@keyframes bubbleFade {
-    0% { opacity: 0.8; transform: translate(-50%, -50%) scale(0.4); }
-    100% { opacity: 0; transform: translate(-50%, -80px) scale(1.3); }
-}
-
-/* Click Spread Bubbles */
-.click-bubble {
-    position: fixed;
-    pointer-events: none;
-    z-index: 99997;
-    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(0,242,254,0.5));
-    border: 1px solid #ffffff;
-    border-radius: 50%;
-    animation: clickSpread 0.8s ease-out forwards;
-}
-
-@keyframes clickSpread {
-    0% { opacity: 1; transform: translate(-50%, -50%) scale(0.2); }
-    100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(1.2); }
-}
-
-/* =========================================================
-   OPENING SCENE (FISHING ANIMATION)
-========================================================= */
-.opening-screen {
-    position: fixed;
-    inset: 0;
-    z-index: 50000;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background: linear-gradient(180deg, #021027 0%, #052046 60%, #010815 100%);
-    transition: transform 1.2s cubic-bezier(0.77, 0, 0.175, 1), opacity 1s ease;
-}
-
-.opening-screen.hide {
-    transform: translateY(-100%);
-    opacity: 0;
-    pointer-events: none;
-}
-
-/* Fisherman Silhouette & Rod Line */
-.fisherman-wrapper {
-    position: absolute;
-    top: 5%;
-    right: 15%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.fisherman {
-    font-size: 65px;
-    filter: drop-shadow(0 0 10px rgba(0,242,254,0.3));
-}
-
-.fishing-line-start {
-    width: 2px;
-    height: 180px;
-    background: rgba(255, 255, 255, 0.4);
-    box-shadow: 0 0 5px rgba(255,255,255,0.8);
-    animation: lineSway 3s ease-in-out infinite alternate;
-}
-
-@keyframes lineSway {
-    0% { transform: rotate(-2deg); }
-    100% { transform: rotate(2deg); }
-}
-
-.opening-title-box {
-    text-align: center;
-    z-index: 2;
-    margin-top: 80px;
-}
-
-.opening-title-box h1 {
-    font-family: 'Fredoka', cursive;
-    font-size: clamp(45px, 8vw, 90px);
-    color: #ffffff;
-    text-shadow: 0 0 20px var(--cyan-day), 0 0 40px var(--accent-day);
-    letter-spacing: 2px;
-}
-
-.opening-title-box p {
-    font-size: 1.2rem;
-    color: #a5f3fc;
-    margin-top: 10px;
-}
-
-.enter-btn {
-    margin-top: 35px;
-    padding: 15px 40px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #00264d;
-    background: linear-gradient(90deg, #00f2fe, #4facfe);
-    border: none;
-    border-radius: 50px;
-    box-shadow: 0 0 25px rgba(0, 242, 254, 0.6);
-    transition: all 0.3s ease;
-}
-
-.enter-btn:hover {
-    transform: scale(1.08);
-    box-shadow: 0 0 40px rgba(0, 242, 254, 0.9);
-}
-
-/* =========================================================
-   RANDOM FISHING HOOK EVENT (TOP OF PAGE)
-========================================================= */
-.fishing-hook-container {
-    position: fixed;
-    top: -200px;
-    right: 20%;
-    z-index: 9000;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    transition: top 2.5s cubic-bezier(0.25, 1, 0.5, 1);
-}
-
-.fishing-hook-container.active {
-    top: 0px;
-}
-
-.hook-line {
-    width: 2px;
-    height: 220px;
-    background: rgba(255,255,255,0.6);
-}
-
-.hook-bait {
-    font-size: 28px;
-    margin-top: -5px;
-    animation: baitWiggle 1s ease-in-out infinite alternate;
-}
-
-@keyframes baitWiggle {
-    from { transform: rotate(-10deg); }
-    to { transform: rotate(10deg); }
-}
-
-/* =========================================================
-   NAVIGATION & THEME TOGGLE
-========================================================= */
-.site-header {
-    position: fixed;
-    top: 20px;
-    left: 0;
-    width: 100%;
-    z-index: 1000;
-}
-
-.navbar {
-    width: min(1180px, 92%);
-    margin: auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 24px;
-    border-radius: 30px;
-    background: var(--panel-bg-day);
-    backdrop-filter: blur(15px);
-    border: 1px solid var(--panel-border-day);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-    transition: var(--transition-theme);
-}
-
-body.night-mode .navbar {
-    background: var(--panel-bg-night);
-    border-color: var(--panel-border-night);
-}
-
-.logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    text-decoration: none;
-    color: #fff;
-    font-family: 'Fredoka', cursive;
-    font-size: 22px;
-}
-
-.nav-links {
-    display: flex;
-    gap: 24px;
-    list-style: none;
-}
-
-.nav-links a {
-    text-decoration: none;
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 14px;
-    font-weight: 500;
-    transition: 0.3s;
-}
-
-.nav-links a:hover, .nav-links a.active {
-    color: var(--cyan-day);
-    text-shadow: 0 0 10px var(--cyan-day);
-}
-
-.theme-toggle-btn {
-    background: rgba(255,255,255,0.2);
-    border: 1px solid rgba(255,255,255,0.4);
-    color: #fff;
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 13px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: 0.3s;
-}
-
-.theme-toggle-btn:hover {
-    background: rgba(255,255,255,0.35);
-}
-
-/* =========================================================
-   HERO SECTION & OCEAN BACKGROUND ELEMENTS
-========================================================= */
-.home-hero {
-    min-height: 100vh;
-    position: relative;
-    padding: 160px 6% 100px;
-    display: flex;
-    align-items: center;
-}
-
-.home-content {
-    width: min(1180px, 100%);
-    margin: auto;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 60px;
-    align-items: center;
-    z-index: 10;
-}
-
-.home-copy h2 {
-    font-size: clamp(38px, 5vw, 65px);
-    line-height: 1.15;
-}
-
-.home-copy h2 span {
-    color: var(--accent-day);
-    text-shadow: 0 0 20px rgba(255, 123, 37, 0.5);
-    transition: var(--transition-theme);
-}
-
-body.night-mode .home-copy h2 span {
-    color: var(--accent-night);
-    text-shadow: 0 0 20px rgba(168, 85, 247, 0.6);
-}
-
-.description {
-    margin-top: 20px;
-    color: rgba(255, 255, 255, 0.85);
-    font-size: 16px;
-    line-height: 1.8;
-}
-
-.home-buttons {
-    display: flex;
-    gap: 15px;
-    margin-top: 30px;
-}
-
-.btn-ocean {
-    text-decoration: none;
-    padding: 12px 28px;
-    border-radius: 30px;
-    font-size: 14px;
-    font-weight: 600;
-    transition: 0.3s;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.btn-primary {
-    background: linear-gradient(135deg, var(--accent-day), #ff4e50);
-    color: #fff;
-    box-shadow: 0 5px 20px rgba(255, 78, 80, 0.4);
-}
-
-body.night-mode .btn-primary {
-    background: linear-gradient(135deg, var(--accent-night), #6366f1);
-    box-shadow: 0 5px 20px rgba(168, 85, 247, 0.4);
-}
-
-.btn-primary:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(255, 78, 80, 0.6);
-}
-
-.btn-secondary {
-    background: rgba(255,255,255,0.1);
-    border: 1px solid rgba(255,255,255,0.3);
-    color: #fff;
-}
-
-.btn-secondary:hover {
-    background: rgba(255,255,255,0.25);
-}
-
-/* Dynamic Sea Creatures Background */
-.sea-creature {
-    position: absolute;
-    pointer-events: none;
-    user-select: none;
-    z-index: 2;
-    transition: opacity 0.8s ease;
-}
-
-/* Day Creatures */
-.day-creature { opacity: 1; }
-body.night-mode .day-creature { opacity: 0; }
-
-/* Night Creatures */
-.night-creature { opacity: 0; }
-body.night-mode .night-creature { opacity: 1; }
-
-.clownfish-main {
-    font-size: 90px;
-    animation: swimUpDown 4s ease-in-out infinite alternate;
-    filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3));
-}
-
-@keyframes swimUpDown {
-    from { transform: translateY(-15px) rotate(-3deg); }
-    to { transform: translateY(15px) rotate(3deg); }
-}
-
-.swimming-fish {
-    position: absolute;
-    font-size: 35px;
-    animation: swimAcross 18s linear infinite;
-}
-
-@keyframes swimAcross {
-    0% { left: -10%; transform: scaleX(1); }
-    50% { transform: scaleX(1) translateY(-20px); }
-    50.1% { transform: scaleX(-1) translateY(-20px); }
-    100% { left: 110%; transform: scaleX(-1); }
-}
-
-/* =========================================================
-   EXPLORE CHAPTERS
-========================================================= */
-.explore {
-    padding: 100px 6%;
-    position: relative;
-    z-index: 10;
-}
-
-.section-heading {
-    text-align: center;
-    margin-bottom: 50px;
-}
-
-.section-heading h2 {
-    font-family: 'Fredoka', cursive;
-    font-size: 2.5rem;
-}
-
-.chapter-grid {
-    width: min(1100px, 100%);
-    margin: auto;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 25px;
-}
-
-.chapter-card {
-    background: var(--panel-bg-day);
-    border: 1px solid var(--panel-border-day);
-    backdrop-filter: blur(12px);
-    border-radius: 24px;
-    padding: 35px 25px;
-    text-decoration: none;
-    color: #fff;
-    transition: var(--transition-theme), transform 0.4s ease, box-shadow 0.4s ease;
-}
-
-body.night-mode .chapter-card {
-    background: var(--panel-bg-night);
-    border-color: var(--panel-border-night);
-}
-
-.chapter-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 15px 35px rgba(0, 242, 254, 0.25);
-    border-color: var(--cyan-day);
-}
-
-.chapter-icon {
-    font-size: 40px;
-    margin-bottom: 20px;
-}
-
-.chapter-card h3 {
-    font-size: 1.4rem;
-    margin-bottom: 10px;
-}
-
-.chapter-card p {
-    font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.75);
-    line-height: 1.6;
-}
-
-/* =========================================================
-   CORAL REEF / DEEP SEA FLOOR (FOOTER AREA)
-========================================================= */
-.sea-floor-decor {
-    position: relative;
-    width: 100%;
-    height: 120px;
-    background: radial-gradient(ellipse at bottom, rgba(255,182,193,0.3) 0%, transparent 70%);
-    display: flex;
-    justify-content: space-around;
-    align-items: flex-end;
-    font-size: 45px;
-    padding-bottom: 10px;
-}
-
-footer {
-    background: #010613;
-    text-align: center;
-    padding: 40px 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 0.9rem;
-}
-
-/* =========================================================
-   RESPONSIVE DESIGN
-========================================================= */
-@media (max-width: 900px) {
-    .home-content { grid-template-columns: 1fr; text-align: center; }
-    .home-buttons { justify-content: center; }
-    .chapter-grid { grid-template-columns: 1fr; }
-    .nav-links { display: none; }
-}
-</style>
-</head>
-
-<body class="day-mode">
-
-<!-- CUSTOM CLOWNFISH CURSOR -->
-<div id="customCursor">🐠</div>
-
-<!-- RANDOM FISHING HOOK EVENT -->
-<div class="fishing-hook-container" id="fishingHook">
-    <div class="hook-line"></div>
-    <div class="hook-bait">🪝🐛</div>
-</div>
-
-<!-- =========================================================
-     OPENING SCREEN (FISHING SCENE)
-========================================================= -->
-<section class="opening-screen" id="openingScreen">
-    <div class="fisherman-wrapper">
-        <div class="fisherman">🎣</div>
-        <div class="fishing-line-start"></div>
-    </div>
-    <div class="opening-title-box">
-        <h1>OCEAN PORTFOLIO</h1>
-        <p>ดำดิ่งสู่เรื่องราวและผลงานใต้ท้องทะเล</p>
-        <button class="enter-btn" onclick="closeOpening()">ENTER MY WORLD 🌊</button>
-    </div>
-</section>
-
-<!-- =========================================================
-     NAVIGATION BAR
-========================================================= -->
-<header class="site-header">
-    <nav class="navbar">
-        <a href="index.html" class="logo">
-            <span>🐠</span> OCEAN PORT
-        </a>
-        <ul class="nav-links">
-            <li><a href="index.html" class="active">หน้าแรก</a></li>
-            <li><a href="profile.html">ประวัติส่วนตัว</a></li>
-            <li><a href="education.html">การศึกษา</a></li>
-            <li><a href="hobby.html">งานอดิเรก</a></li>
-            <li><a href="contact.html">ติดต่อ</a></li>
-        </ul>
-        <button class="theme-toggle-btn" onclick="toggleTheme()" id="themeBtn">
-            <span>🌙</span> <span id="themeText">โหมดทะเลลึก</span>
-        </button>
-    </nav>
-</header>
-
-<main>
-    <!-- =========================================================
-         HERO SECTION
-    ========================================================= -->
-    <section class="home-hero">
-        <!-- Floating Sea Creatures (Day/Night) -->
-        <div class="sea-creature day-creature swimming-fish" style="top: 25%;">🐢</div>
-        <div class="sea-creature day-creature swimming-fish" style="top: 65%; animation-duration: 24s;">⭐</div>
-        <div class="sea-creature night-creature swimming-fish" style="top: 30%;">🪼</div>
-        <div class="sea-creature night-creature swimming-fish" style="top: 70%; animation-duration: 15s;">🦑</div>
-
-        <div class="home-content">
-            <div class="home-copy">
-                <h2>สวัสดีครับ! <br>ฉันชื่อ <span>[กรอกชื่อ]</span></h2>
-                <p class="description">
-                    ยินดีต้อนรับเข้าสู่พอร์ตโฟลิโอธีมท่องโลกใต้ทะเล (Ocean Portfolio) 
-                    สัมผัสประสบการณ์ใต้ท้องทะเลพร้อมการเรียนรู้และเรื่องราวของฉัน
-                </p>
-                <div class="home-buttons">
-                    <a href="profile.html" class="btn-ocean btn-primary">รู้จักฉันมากขึ้น 🌊</a>
-                    <a href="hobby.html" class="btn-ocean btn-secondary">ดูงานอดิเรก 🪸</a>
-                </div>
-            </div>
-
-            <!-- Main Mascot Centerpiece -->
-            <div style="text-align: center;">
-                <div class="clownfish-main day-creature">🐠</div>
-                <div class="clownfish-main night-creature" style="display:none;">🐡</div>
-            </div>
-        </div>
-    </section>
-
-    <!-- =========================================================
-         EXPLORE CHAPTERS
-    ========================================================= -->
-    <section class="explore">
-        <div class="section-heading">
-            <h2>สำรวจเรื่องราวใต้ท้องทะเล</h2>
-            <p>เลือกบทเรียนและเนื้อหาที่ต้องการรับชม</p>
-        </div>
-
-        <div class="chapter-grid">
-            <a href="profile.html" class="chapter-card">
-                <div class="chapter-icon">🤿</div>
-                <h3>ประวัติส่วนตัว</h3>
-                <p>ทำความรู้จักตัวตน ความสนใจ และข้อมูลทั่วไปของฉัน</p>
-            </a>
-
-            <a href="education.html" class="chapter-card">
-                <div class="chapter-icon">🐚</div>
-                <h3>การศึกษา</h3>
-                <p>เส้นทางการเรียนรู้และประวัติการศึกษาชั้น ม.3</p>
-            </a>
-
-            <a href="hobby.html" class="chapter-card">
-                <div class="chapter-icon">🪸</div>
-                <h3>งานอดิเรก</h3>
-                <p>กิจกรรมยามว่าง กีฬา เกม และความสนใจพิเศษ</p>
-            </a>
-        </div>
-    </section>
-</main>
-
-<!-- CORAL REEF / DEEP SEA DECORATIVE FLOOR -->
-<div class="sea-floor-decor">
-    <span class="day-creature">🪸</span>
-    <span class="day-creature">🐚</span>
-    <span class="day-creature">🪼</span>
-    <span class="day-creature">🦐</span>
-    <span class="night-creature">🫧</span>
-    <span class="night-creature">🦀</span>
-    <span class="night-creature">🐙</span>
-</div>
-
-<footer>
-    <p>&copy; 2026 OCEAN PORTFOLIO — สร้างสรรค์โดย [กรอกชื่อ-นามสกุล] ชั้น ม.3</p>
-</footer>
-
-<!-- =========================================================
-     JAVASCRIPT LOGIC
-========================================================= -->
-<script>
-/* Custom Cursor Movement */
-const cursor = document.getElementById("customCursor");
-let lastX = 0, lastY = 0;
-
-document.addEventListener("mousemove", (e) => {
-    cursor.style.left = e.clientX + "px";
-    cursor.style.top = e.clientY + "px";
-
-    // Flip Clownfish based on horizontal move direction
-    if (e.clientX < lastX) {
-        cursor.style.transform = "translate(-50%, -50%) scaleX(1)";
-    } else if (e.clientX > lastX) {
-        cursor.style.transform = "translate(-50%, -50%) scaleX(-1)";
-    }
-    lastX = e.clientX;
-    lastY = e.clientY;
-
-    // Generate Trail Bubbles
-    if (Math.random() < 0.25) {
-        createCursorBubble(e.clientX, e.clientY);
-    }
-});
-
-function createCursorBubble(x, y) {
-    const bubble = document.createElement("div");
-    bubble.className = "cursor-bubble";
-    const size = Math.random() * 12 + 6;
-    bubble.style.width = size + "px";
-    bubble.style.height = size + "px";
-    bubble.style.left = x + "px";
-    bubble.style.top = y + "px";
-    document.body.appendChild(bubble);
-    setTimeout(() => bubble.remove(), 1000);
-}
-
-/* Click Spread Bubbles */
-document.addEventListener("click", (e) => {
-    for (let i = 0; i < 8; i++) {
-        const bubble = document.createElement("div");
-        bubble.className = "click-bubble";
-        const size = Math.random() * 16 + 8;
-        bubble.style.width = size + "px";
-        bubble.style.height = size + "px";
-        bubble.style.left = e.clientX + "px";
-        bubble.style.top = e.clientY + "px";
-        
-        const angle = Math.random() * Math.PI * 2;
-        const dist = Math.random() * 60 + 20;
-        bubble.style.setProperty("--dx", (Math.cos(angle) * dist) + "px");
-        bubble.style.setProperty("--dy", (Math.sin(angle) * dist) + "px");
-        
-        document.body.appendChild(bubble);
-        setTimeout(() => bubble.remove(), 800);
-    }
-});
-
-/* Theme Toggle (Day / Night Deep Sea) */
-function toggleTheme() {
-    const body = document.body;
-    const themeBtnText = document.getElementById("themeText");
-    const dayFish = document.querySelector(".clownfish-main.day-creature");
-    const nightFish = document.querySelector(".clownfish-main.night-creature");
-
-    body.classList.toggle("night-mode");
-
-    if (body.classList.contains("night-mode")) {
-        themeBtnText.textContent = "โหมดกลางวัน";
-        dayFish.style.display = "none";
-        nightFish.style.display = "block";
-    } else {
-        themeBtnText.textContent = "โหมดทะเลลึก";
-        dayFish.style.display = "block";
-        nightFish.style.display = "none";
-    }
-}
-
-/* Opening Screen Close (Fishing Pull-Up) */
-function closeOpening() {
-    document.getElementById("openingScreen").classList.add("hide");
-}
-
-document.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-        closeOpening();
-    }
-});
-
-/* Random Fishing Hook Spawning */
-function triggerFishingHook() {
-    const hook = document.getElementById("fishingHook");
-    hook.classList.add("active");
-    setTimeout(() => {
-        hook.classList.remove("active");
-    }, 4500);
-}
-
-// Trigger fishing hook event every 12 seconds
-setInterval(triggerFishingHook, 12000);
-</script>
-
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        /* Fishing Intro Animation Sequence */
+        window.addEventListener('DOMContentLoaded', () => {
+            const overlay = document.getElementById('intro-overlay');
+            
+            // Auto reel up after 2.5 seconds
+            setTimeout(() => {
+                finishIntro();
+            }, 2500);
+        });
+
+        function finishIntro() {
+            const overlay = document.getElementById('intro-overlay');
+            overlay.classList.add('pull-up');
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 1200);
+        }
+
+        /* Custom Cursor Movement */
+        const cursor = document.getElementById("customCursor");
+        let lastX = 0;
+
+        document.addEventListener("mousemove", (e) => {
+            cursor.style.left = e.clientX + "px";
+            cursor.style.top = e.clientY + "px";
+
+            if (e.clientX < lastX) {
+                cursor.style.transform = "translate(-50%, -50%) scaleX(1)";
+            } else if (e.clientX > lastX) {
+                cursor.style.transform = "translate(-50%, -50%) scaleX(-1)";
+            }
+            lastX = e.clientX;
+
+            if (Math.random() < 0.2) {
+                createCursorBubble(e.clientX, e.clientY);
+            }
+        });
+
+        function createCursorBubble(x, y) {
+            const bubble = document.createElement("div");
+            bubble.className = "cursor-bubble";
+            const size = Math.random() * 12 + 6;
+            bubble.style.width = size + "px";
+            bubble.style.height = size + "px";
+            bubble.style.left = x + "px";
+            bubble.style.top = y + "px";
+            document.body.appendChild(bubble);
+            setTimeout(() => bubble.remove(), 1000);
+        }
+
+        /* Theme Toggle Function */
+        function toggleTheme() {
+            const body = document.body;
+            const themeBtnText = document.getElementById("themeText");
+
+            body.classList.toggle("night-mode");
+
+            if (body.classList.contains("night-mode")) {
+                themeBtnText.textContent = "โหมดกลางวัน";
+            } else {
+                themeBtnText.textContent = "โหมดทะเลลึก";
+            }
+        }
+    </script>
 </body>
 </html>
